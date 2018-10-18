@@ -7,6 +7,7 @@
             <th>ID</th>
             <th>Email</th>
             <th>Password</th>
+            <th>Purchase History</th>
         </tr>
     </thead>
     <tbody>
@@ -15,6 +16,9 @@
                 <td scope="row"><%= user.id %></td>
                 <td><%= user.email %></td>
                 <td><%= user.password %></td>
+                <td>
+                    <a class="btn btn-primary" href="/" role="button">View</a>
+                </td>
             </tr>
         <% }); %>
     </tbody>

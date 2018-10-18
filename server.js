@@ -78,6 +78,7 @@ app.post('/products/update', function(request, response)
 app.get('/products/delete/:pid', function(request, response)
 {
     var pid = request.params.pid;
+    console.log("Delete" + pid);
     var sql = `delete from products where id = ${pid}`;
     
     db.query(sql)
