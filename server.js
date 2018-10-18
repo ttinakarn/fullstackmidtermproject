@@ -16,10 +16,9 @@ app.get('/', function (request, response) {
 
 app.get('/about', function (request, response) {
     var name = 'Tinakarn Janthong';
-    var hobbies = ['Games', 'Sports', 'Cooking'];
-    var bdate = '06/03/1997';
-    response.render('pages/about', { fullname: name, hobbies: hobbies, bdate: bdate });
+    response.render('pages/about', {fullname: name});
 });
+
 app.get('/products', function (request, response) 
 {
     var id = request.param('id');
@@ -36,7 +35,7 @@ app.get('/products', function (request, response)
         })
         .catch(function (data) 
         {
-            console.log('ERROR' + error);
+            console.log('/products ERROR' + error);
         })
 });
 
@@ -50,9 +49,30 @@ app.get('/products/:pid', function(request, response)
         {
             response.render('pages/product_edit', { product: data[0] });
         })
-        .catch(function (data) 
+        .catch(function (error) 
         {
-            console.log('ERROR' + error);
+            console.log('/products/:pid ERROR' + error);
+        })
+});
+
+//Update data
+app.post('/products/update', function(request, response)
+{
+    var id = request.body.id;
+    var title = request.body.title;
+    var price = request.body.price;
+    //var sql = 'update products set title = "' + title + '", price = "' + price + '" where id = ' + id;
+    var sql = `update products set title = '${title}', price = ${price} where id = ${id}`;
+    
+    db.query(sql)
+        .then(function(data)
+        {
+            console.log("Update"); 
+            response.redirect('/products');
+        })
+        .catch(function(data)
+        {
+            console.log('/products/update ERROR' + error);
         })
 });
 
@@ -89,21 +109,6 @@ app.get('/users/:id', function (request, response)
         {
             console.log('ERROR' + error);
         })
-});
-
-//Update data
-app.post('/products/update', function(request, response){
-    var id = request.body.id;
-    var title = request.body.title;
-    var price = request.body.price;
-    //var sql = 'update products set title = "' + title + '", price = "' + price + '" where id = ' + id;
-    var sql = `update product set title = ${title}, price = ${price} where id = ${id}`;
-    
-
-    // db.none(sql)
-    //     .then
-        
-    response.redirect('/products');
 });
 
 var port = process.env.PORT || 8080;
