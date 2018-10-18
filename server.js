@@ -22,10 +22,10 @@ app.get('/about', function (request, response) {
 app.get('/products', function (request, response) 
 {
     var id = request.param('id');
-    var sql = 'select * from products';
+    var sql = 'select * from products order by id ASC';
     if(id)
     {
-        sql += ' where id =' + id;
+        sql += ` where id = ${id}`;
     }
     db.any(sql)
         .then(function (data) 
@@ -67,12 +67,28 @@ app.post('/products/update', function(request, response)
     db.query(sql)
         .then(function(data)
         {
-            console.log("Update"); 
             response.redirect('/products');
         })
         .catch(function(data)
         {
             console.log('/products/update ERROR' + error);
+        })
+});
+
+app.get('/products/delete/:pid', function(request, response)
+{
+    var pid = request.params.pid;
+    var sql = `delete from products where id = ${pid}`;
+    
+    db.query(sql)
+        .then(function(data)
+        {
+            console.log("Delete"); 
+            response.redirect('/products');
+        })
+        .catch(function(data)
+        {
+            console.log('/products/delete ERROR' + error);
         })
 });
 
