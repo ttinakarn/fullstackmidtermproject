@@ -6,7 +6,7 @@ var db = pgp('postgres://fijhidaiiibojh:0c6abb30a97fdf1bb0969ae26665733c091b0820
 
 var bodyParser = require('body-parser');
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.urlencoded({ extended: true }));
 
 app.set('view engine', 'ejs');
 
@@ -16,53 +16,44 @@ app.get('/', function (request, response) {
 
 app.get('/about', function (request, response) {
     var name = 'Tinakarn Janthong';
-    response.render('pages/about', {fullname: name});
+    response.render('pages/about', { fullname: name });
 });
 
-app.get('/products', function (request, response) 
-{
+app.get('/products', function (request, response) {
     var id = request.param('id');
     var sql = 'select * from products order by id ASC';
-    if(id)
-    {
+    if (id) {
         sql += ` where id = ${id}`;
     }
     db.any(sql)
-        .then(function (data) 
-        {
+        .then(function (data) {
             console.log('DATA' + data);
             response.render('pages/products', { products: data });
         })
-        .catch(function (data) 
-        {
+        .catch(function (data) {
             console.log('/products ERROR' + error);
         })
 });
 
-app.get('/products/:pid', function(request, response)
-{
+app.get('/products/:pid', function (request, response) {
     var pid = request.params.pid;
-    if(pid == 'insert')
-    {
+    if (pid == 'insert') {
         response.render('pages/insert_product');
     }
-    else
-    {
+    else {
         var sql = 'select * from products where id =' + pid;
 
         db.any(sql)
             .then(function (data) {
                 response.render('pages/product_edit', { product: data[0] });
             })
-        .catch(function (error) 
-        {
-            console.log('/products/:pid ERROR' + error);
-        })
+            .catch(function (error) {
+                console.log('/products/:pid ERROR' + error);
+            })
     }
 });
 
-app.post('/product/insert', function(request, response)
-{
+app.post('/product/insert', function (request, response) {
     var title = request.body.title;
     var price = request.body.price;
     var tags = request.body.tags;
@@ -72,90 +63,95 @@ app.post('/product/insert', function(request, response)
     var sql = `insert into products (title,price,created_at,tags) values('${title}','${price}','${day} ${time}','{${tags}}')`;
     console.log(sql);
     db.query(sql)
-        .then(function(data)
-        {
+        .then(function (data) {
             response.redirect('/products');
         })
-        .catch(function(data)
-        {
+        .catch(function (data) {
             console.log('/products/insert ERROR' + error);
         })
 });
 
-//Update data
-app.post('/product/update', function(request, response)
-{
+app.post('/product/update', function (request, response) {
     var id = request.body.id;
     var title = request.body.title;
     var price = request.body.price;
     //var sql = 'update products set title = "' + title + '", price = "' + price + '" where id = ' + id;
     var sql = `update products set title = '${title}', price = ${price} where id = ${id}`;
-    
+
     db.query(sql)
-        .then(function(data)
-        {
+        .then(function (data) {
             response.redirect('/products');
         })
-        .catch(function(data)
-        {
+        .catch(function (data) {
             console.log('/products/update ERROR' + error);
         })
 });
 
-app.post('/product/delete', function(request, response)
-{
+app.post('/product/delete', function (request, response) {
     var id = request.body.id;
     var sql = `delete from products where id = ${id}`;
-    
+
     db.query(sql)
-        .then(function(data)
-        {
-            console.log("Delete"); 
+        .then(function (data) {
+            console.log("Delete");
             response.redirect('/products');
         })
-        .catch(function(data)
-        {
+        .catch(function (data) {
             console.log('/products/delete ERROR' + error);
         })
 });
 
-app.get('/users', function (request, response) 
-{
+app.get('/users', function (request, response) {
     db.any('select * from users')
-        .then(function (data) 
-        {
+        .then(function (data) {
             console.log('DATA' + data);
             response.render('pages/users', { users: data });
         })
-        .catch(function (data) 
-        {
+        .catch(function (data) {
             console.log('ERROR' + error);
         })
 });
 
-app.get('/users/:id', function (request, response) 
-{
-    //*ตรงนี้ต่างกัน
+app.get('/users/:id', function (request, response) {
     var id = request.params.id;
-    var sql = 'select * from users';
-    if(id)
-    {
-        sql += ' where id =' + id;
-    }
+    var sql = `select email, user_id, purchase_id, purchases.created_at, name, address, purchase_items.state
+    from purchase_items, products, purchases, users
+    where products.id = purchase_items.product_id
+    and purchases.id = purchase_items.purchase_id
+    and purchases.user_id = users.id
+    and user_id = ${id}`;
     db.any(sql)
-        .then(function (data) 
-        {
+        .then(function (data) {
             console.log('DATA' + data);
-            response.render('pages/users', { users: data });
+            response.render('pages/user_report', { user: data });
         })
-        .catch(function (data) 
-        {
+        .catch(function (data) {
+            console.log('ERROR' + error);
+        })
+});
+
+app.get('/receipt/:uid/:pid', function (request, response) {
+    var user_id = request.params.uid;
+    var purchase_id = request.params.pid;
+    var total = 0;
+    var sql = `select title, products.price, quantity, user_id, purchase_id, purchases.created_at, name, address, purchases.state, zipcode, purchase_items.state as status, email
+    from purchase_items, products, purchases, users
+    where products.id = purchase_items.product_id
+    and purchases.id = purchase_items.purchase_id
+    and purchases.user_id = users.id
+    and user_id = ${user_id}
+    and purchase_id = ${purchase_id}`;
+    db.any(sql)
+        .then(function (data) {
+            console.log('DATA' + data);
+            response.render('pages/receipt', { user: data, total: total});
+        })
+        .catch(function (data) {
             console.log('ERROR' + error);
         })
 });
 
 var port = process.env.PORT || 8080;
-app.listen(port, function()
-    {
-        console.log('App is running on http://localhost:' + port);
-    });
+app.listen(port, function () {
+    console.log('App is running on http://localhost:' + port);
+});

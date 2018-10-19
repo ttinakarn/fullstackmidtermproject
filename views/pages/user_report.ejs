@@ -1,13 +1,49 @@
 <% include ../partials/header %>
 
-<h1 class="display-3 text-center">About Me</h1>
-<div class="jumbotron text-center">
-    <p class="display-4"><%= fullname %></p>
-    <hr class="my-2">
-    <p class="lead">Student ID: 5930213054</p>
-    <p class="lead">Major: Software Engineering</p>
-    <p class="lead">Faculty: College of Computing</p>
-    <p class="lead">University: Prince of Songkla University Phuket Campus</p>
+<div class="row">
+    <div class="col-2">
+        <a href="/users" class="h1 text-dark">&lt; Back</a>
+    </div>
+    <div class="col-10">
+        <h1>Purchase history: <%= user[0].email %></h1> 
+    </div>
 </div>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Purchase ID</th>
+            <th>Purchase date</th>
+            <th>Name</th>
+            <th>Adress</th>
+            <th>Status</th>
+            <th>Receipt</th>
+        </tr>
+    </thead>
+    <tbody>
+        <% user.forEach(function(user) { %>
+        <tr>
+            <td scope="row">
+                <%= user.purchase_id %>
+            </td>
+            <td>
+                <%= user.created_at.toLocaleDateString() %>
+            </td>
+            <td>
+                <%= user.name %>
+            </td>
+            <td>
+                <%= user.address %>
+            </td>
+            <td>
+                <%= user.state %>
+            </td>
+            <td>
+                <a class="btn btn-secondary" href="/receipt/<%= user.user_id %>/<%= user.purchase_id %>" role="button">View</a>
+            </td>
+        </tr>
+        <% }); %>
+    </tbody>
+</table>
 
 <% include ../partials/footer %>

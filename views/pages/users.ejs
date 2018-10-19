@@ -1,6 +1,6 @@
 <% include ../partials/header %>
 
-<h1 class="display-4 text-center">Users</h1>
+<h1 class="text-center">Users</h1>
 <table class="table">
     <thead>
         <tr>
@@ -17,7 +17,7 @@
                 <td><%= user.email %></td>
                 <td><%= user.password %></td>
                 <td>
-                    <a class="btn btn-primary" href="/" role="button">View</a>
+                    <a class="btn btn-secondary" href="/users/<%= user.id %>" role="button">View</a>
                 </td>
             </tr>
         <% }); %>
