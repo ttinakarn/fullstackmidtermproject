@@ -102,7 +102,7 @@ app.post('/product/delete', function (request, response) {
 });
 
 app.get('/users', function (request, response) {
-    db.any('select * from users')
+    db.any('select * from users order by id ASC')
         .then(function (data) {
             console.log('DATA' + data);
             response.render('pages/users', { users: data });
@@ -126,6 +126,7 @@ app.get('/users/:id', function (request, response) {
             response.render('pages/user_report', { user: data });
         })
         .catch(function (data) {
+            response.render('pages/index');
             console.log('ERROR' + error);
         })
 });
@@ -144,10 +145,29 @@ app.get('/receipt/:uid/:pid', function (request, response) {
     db.any(sql)
         .then(function (data) {
             console.log('DATA' + data);
-            response.render('pages/receipt', { user: data, total: total});
+            response.render('pages/receipt', { user: data, total: total });
         })
         .catch(function (data) {
             console.log('ERROR' + error);
+        })
+});
+
+app.post('/user/insert', function (request, response) {
+    var email = request.body.email;
+    var pwd = request.body.pwd;
+    var sex = request.body.sex;
+    var date = new Date();
+    var day = date.toLocaleDateString();
+    var time = date.toLocaleTimeString();
+    //INSERT INTO "public"."users" (email,password,details,created_at) VALUES('a@email.com','sssss','"sex"=>"F"','2009-12-21 03:36:00+07');
+    var sql = `insert into users (email,password,details,created_at) values('${email}','${pwd}','"sex"=>"{${sex}}"','${day} ${time}')`;
+    console.log(sql);
+    db.query(sql)
+        .then(function (data) {
+            response.redirect('/users');
+        })
+        .catch(function (data) {
+            console.log('/products/insert ERROR' + error);
         })
 });
 

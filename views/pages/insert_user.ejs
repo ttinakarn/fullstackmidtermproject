@@ -1,0 +1,42 @@
+<% include ../partials/header %>
+
+<h1 class="display-4 text-center">Add new user</h1>
+
+<form action="/user/insert" method="post">
+    <div class="form-group row">
+        <label class="col-sm-2 col-form-label">Email</label>
+        <div class="col-sm-10">
+            <input type="email" class="form-control" name="email" required>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <label class="col-sm-2 col-form-label">Password</label>
+        <div class="col-sm-10">
+            <input type="password" class="form-control" name="pwd" required>
+        </div>
+    </div>
+
+    <fieldset class="form-group">
+        <div class="row">
+            <legend class="col-form-label col-sm-2 pt-0">Sex</legend>
+            <div class="col-sm-10">
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="sex" id="inlineRadio1" value="M" required>
+                    <label class="form-check-label" for="inlineRadio1">Male</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="sex" id="inlineRadio2" value="F">
+                    <label class="form-check-label" for="inlineRadio2">Female</label>
+                </div>
+            </div>
+        </div>
+    </fieldset>
+
+    <div class="text-center">
+        <button type="submit" class="btn btn-success">Add</button>
+        <a class="btn btn-warning" href="/users" role="button">Cancel</a>
+    </div>
+</form>
+
+<% include ../partials/footer %>
