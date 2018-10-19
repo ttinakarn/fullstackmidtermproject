@@ -42,21 +42,48 @@ app.get('/products', function (request, response)
 app.get('/products/:pid', function(request, response)
 {
     var pid = request.params.pid;
-    var sql = 'select * from products where id =' + pid;
+    if(pid == 'insert')
+    {
+        response.render('pages/insert_product');
+    }
+    else
+    {
+        var sql = 'select * from products where id =' + pid;
 
-    db.any(sql)
-        .then(function (data)
-        {
-            response.render('pages/product_edit', { product: data[0] });
-        })
+        db.any(sql)
+            .then(function (data) {
+                response.render('pages/product_edit', { product: data[0] });
+            })
         .catch(function (error) 
         {
             console.log('/products/:pid ERROR' + error);
         })
+    }
+});
+
+app.post('/product/insert', function(request, response)
+{
+    var title = request.body.title;
+    var price = request.body.price;
+    var tags = request.body.tags;
+    var date = new Date();
+    var day = date.toLocaleDateString();
+    var time = date.toLocaleTimeString();
+    var sql = `insert into products (title,price,created_at,tags) values('${title}','${price}','${day} ${time}','{${tags}}')`;
+    console.log(sql);
+    db.query(sql)
+        .then(function(data)
+        {
+            response.redirect('/products');
+        })
+        .catch(function(data)
+        {
+            console.log('/products/insert ERROR' + error);
+        })
 });
 
 //Update data
-app.post('/products/update', function(request, response)
+app.post('/product/update', function(request, response)
 {
     var id = request.body.id;
     var title = request.body.title;
@@ -75,7 +102,7 @@ app.post('/products/update', function(request, response)
         })
 });
 
-app.post('/products/delete', function(request, response)
+app.post('/product/delete', function(request, response)
 {
     var id = request.body.id;
     var sql = `delete from products where id = ${id}`;

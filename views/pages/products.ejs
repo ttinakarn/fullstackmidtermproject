@@ -1,6 +1,15 @@
 <% include ../partials/header %>
 
-<h1 class="display-4 text-center">Products</h1>
+<div class="row">
+    <div class="col">
+        <h1 class="display-4">Products</h1> 
+    </div>
+    <div class="col" style="margin: auto;">
+        <a name="" id="" class="btn btn-info float-right" href="/products/insert" role="button">Add new product</a>
+    </div>
+</div>
+    
+
 <table class="table">
     <thead>
         <tr>
@@ -12,14 +21,20 @@
     </thead>
     <tbody>
         <% products.forEach(function(product) { %>
-            <tr>
-                <td scope="row"><%= product.id %></td>
-                <td><%= product.title %></td>
-                <td><%= product.price %></td>
-                <td>
-                    <a class="btn btn-warning" href="/products/<%= product.id %>" role="button">Edit</a>
-                </td>
-            </tr>
+        <tr>
+            <td scope="row">
+                <%= product.id %>
+            </td>
+            <td>
+                <%= product.title %>
+            </td>
+            <td>
+                <%= product.price %>
+            </td>
+            <td>
+                <a class="btn btn-secondary" href="/products/<%= product.id %>" role="button">Edit</a>
+            </td>
+        </tr>
         <% }); %>
     </tbody>
 </table>
