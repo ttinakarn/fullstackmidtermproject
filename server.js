@@ -127,7 +127,7 @@ app.get('/users/:id', function (request, response) {
         db.any(sql)
             .then(function (data) {
                 console.log('DATA' + JSON.stringify(data));
-                response.render('pages/user_report', { user: data });
+                response.render('pages/purchase_history', { user: data });
             })
             .catch(function (data) {
                 response.render('pages/index');
@@ -175,7 +175,31 @@ app.post('/user/insert', function (request, response) {
         })
 });
 
-app.get('/report', function (request, response) {
+app.get('/report/product', function (request, response) {
+    var sql = `select product_id, title, count(quantity) as count
+    from products, purchase_items
+    where products.id = product_id
+    group by product_id, title
+    order by product_id`;
+    var product_x = [];
+    var product_y = [];
+    db.any(sql)
+        .then(function (data) {
+            data.forEach(function (product) {
+                product_x.push(product.title);
+                product_y.push(product.count);
+            });
+            console.log(product_x);
+            console.log(product_y);
+            console.log('DATA' + data);
+            response.render('pages/product_report', { products: data, product_x: product_x, product_y: product_y });
+        })
+        .catch(function (data) {
+            console.log('/report ERROR' + error);
+        })
+});
+
+app.get('/report/user', function (request, response) {
     var sql = `select user_id, email, count(user_id) as count
     from purchases, users
     where purchases.user_id = users.id
@@ -193,7 +217,7 @@ app.get('/report', function (request, response) {
             console.log(user_x);
             console.log(user_y);
             console.log('DATA' + data);
-            response.render('pages/report', { users: data, user_x: user_x, user_y: user_y });
+            response.render('pages/user_report', { users: data, user_x: user_x, user_y: user_y });
         })
         .catch(function (data) {
             console.log('/report ERROR' + error);

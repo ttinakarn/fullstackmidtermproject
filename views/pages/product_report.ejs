@@ -2,15 +2,15 @@
 
 <div class="row">
     <div class="col">
-        <h1 class="text-center">Users Report</h1>
+        <h1 class="text-center">Products Report</h1>
     </div>
 </div>
 
 <div id="myDiv"></div>
 <script>
     var data = [{
-        x: <%- JSON.stringify(user_x) %>,
-        y: [<%= user_y %>],
+        x: <%- JSON.stringify(product_x) %>,
+        y: [<%= product_y %>],
         type: 'bar'
     }];
 
@@ -26,22 +26,22 @@
 <table class="table">
     <thead>
         <tr>
-            <th>User ID</th>
-            <th>Email</th>
-            <th>Number of purchase</th>
+            <th>Product ID</th>
+            <th>Product Name</th>
+            <th>Number of purchased</th>
         </tr>
     </thead>
     <tbody>
-        <% users.forEach(function(user) { %>
+        <% products.forEach(function(product) { %>
         <tr>
             <td scope="row">
-                <%= user.user_id %>
+                <%= product.product_id %>
             </td>
             <td>
-                <%= user.email %>
+                <%= product.title %>
             </td>
             <td>
-                <%= user.count %>
+                <%= product.count %>
             </td>
         </tr>
         <% }); %>
