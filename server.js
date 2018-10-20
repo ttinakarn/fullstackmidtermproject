@@ -114,21 +114,26 @@ app.get('/users', function (request, response) {
 
 app.get('/users/:id', function (request, response) {
     var id = request.params.id;
-    var sql = `select email, user_id, purchase_id, purchases.created_at, name, address, purchase_items.state
+    if (id == 'insert') {
+        response.render('pages/insert_user');
+    }
+    else {
+        var sql = `select email, user_id, purchase_id, purchases.created_at, name, address, purchase_items.state
     from purchase_items, products, purchases, users
     where products.id = purchase_items.product_id
     and purchases.id = purchase_items.purchase_id
     and purchases.user_id = users.id
     and user_id = ${id}`;
-    db.any(sql)
-        .then(function (data) {
-            console.log('DATA' + data);
-            response.render('pages/user_report', { user: data });
-        })
-        .catch(function (data) {
-            response.render('pages/index');
-            console.log('ERROR' + error);
-        })
+        db.any(sql)
+            .then(function (data) {
+                console.log('DATA' + JSON.stringify(data));
+                response.render('pages/user_report', { user: data });
+            })
+            .catch(function (data) {
+                response.render('pages/index');
+                console.log('ERROR' + error);
+            })
+    }
 });
 
 app.get('/receipt/:uid/:pid', function (request, response) {
@@ -175,15 +180,15 @@ app.get('/report', function (request, response) {
     from purchases, users
     where purchases.user_id = users.id
     GROUP BY user_id, email
-    order by count(user_id) DESC
-    LIMIT 5`;
+    order by user_id`;
     var user_x = [];
     var user_y = [];
     db.any(sql)
         .then(function (data) {
             data.forEach(function (user) {
-                user_x.push(user.email);
-                user_y.push(user.count); 
+                var words = user.email.split('@');
+                user_x.push(words[0]);
+                user_y.push(user.count);
             });
             console.log(user_x);
             console.log(user_y);
