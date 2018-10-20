@@ -159,7 +159,6 @@ app.post('/user/insert', function (request, response) {
     var date = new Date();
     var day = date.toLocaleDateString();
     var time = date.toLocaleTimeString();
-    //INSERT INTO "public"."users" (email,password,details,created_at) VALUES('a@email.com','sssss','"sex"=>"F"','2009-12-21 03:36:00+07');
     var sql = `insert into users (email,password,details,created_at) values('${email}','${pwd}','"sex"=>"{${sex}}"','${day} ${time}')`;
     console.log(sql);
     db.query(sql)
@@ -168,6 +167,31 @@ app.post('/user/insert', function (request, response) {
         })
         .catch(function (data) {
             console.log('/products/insert ERROR' + error);
+        })
+});
+
+app.get('/report', function (request, response) {
+    var sql = `select user_id, email, count(user_id) as count
+    from purchases, users
+    where purchases.user_id = users.id
+    GROUP BY user_id, email
+    order by count(user_id) DESC
+    LIMIT 5`;
+    var user_x = [];
+    var user_y = [];
+    db.any(sql)
+        .then(function (data) {
+            data.forEach(function (user) {
+                user_x.push(user.email);
+                user_y.push(user.count); 
+            });
+            console.log(user_x);
+            console.log(user_y);
+            console.log('DATA' + data);
+            response.render('pages/report', { users: data, user_x: user_x, user_y: user_y });
+        })
+        .catch(function (data) {
+            console.log('/report ERROR' + error);
         })
 });
 

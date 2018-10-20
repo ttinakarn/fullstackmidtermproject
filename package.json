@@ -11,8 +11,10 @@
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.18.3",
+    "chart.js": "^2.7.3",
     "ejs": "^2.6.1",
     "express": "^4.16.3",
-    "pg-promise": "^8.4.6"
+    "pg-promise": "^8.4.6",
+    "plotly.js-dist": "^1.41.3"
   }
 }
