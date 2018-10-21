@@ -180,7 +180,7 @@ app.get('/report/product', function (request, response) {
     from products, purchase_items
     where products.id = product_id
     group by product_id, title
-    order by product_id`;
+    order by count DESC`;
     var product_x = [];
     var product_y = [];
     db.any(sql)
@@ -200,24 +200,28 @@ app.get('/report/product', function (request, response) {
 });
 
 app.get('/report/user', function (request, response) {
-    var sql = `select user_id, email, count(user_id) as count
-    from purchases, users
+    var sql = `select user_id, email, count(user_id) as count, sum(price*quantity) as totalprice
+    from purchases, users, purchase_items
     where purchases.user_id = users.id
+    and purchases.id = purchase_items.purchase_id
     GROUP BY user_id, email
-    order by user_id`;
-    var user_x = [];
-    var user_y = [];
+    order by totalprice DESC`;
+    var x = [];
+    var y = [];
+    var sum = 0;
     db.any(sql)
         .then(function (data) {
             data.forEach(function (user) {
                 var words = user.email.split('@');
-                user_x.push(words[0]);
-                user_y.push(user.count);
+                x.push(words[0]);
+                y.push(user.totalprice);
+                sum += parseFloat(user.totalprice);
             });
-            console.log(user_x);
-            console.log(user_y);
+            console.log(x);
+            console.log(y);
             console.log('DATA' + data);
-            response.render('pages/user_report', { users: data, user_x: user_x, user_y: user_y });
+
+            response.render('pages/user_report', { users: data, user_x: x, user_y: y, sum: sum });
         })
         .catch(function (data) {
             console.log('/report ERROR' + error);
